@@ -1,0 +1,21 @@
+-- Custom splash screen for the Neovim dashboard.
+-- Copy this file to splash.lua and edit to your liking.
+--
+-- Must return a table with:
+--   logo   = list of strings (displayed as-is, supports unicode/emoji)
+--   quotes = list of { text = "...", author = "..." } (one picked at random)
+--
+-- Both fields are optional. Omit quotes to show logo only.
+
+return {
+  logo = {
+    "   🐹",
+  },
+  quotes = {
+    { text = "Don't communicate by sharing memory, share memory by communicating.", author = "Rob Pike" },
+    { text = "Concurrency is not parallelism.", author = "Rob Pike" },
+    { text = "Clear is better than clever.", author = "Rob Pike" },
+    { text = "Errors are values.", author = "Rob Pike" },
+    { text = "Don't panic.", author = "Rob Pike" },
+  },
+}

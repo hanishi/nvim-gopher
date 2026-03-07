@@ -9,7 +9,6 @@ Leader key: `Space`
 | `Space n` | Toggle file tree |
 | `Space N` | Reveal current file in tree |
 | `Enter` | Open file in new tab (or jump to existing tab) |
-| `C-t` | Open file in new tab |
 | `a` | Create file/directory |
 | `d` | Delete |
 | `r` | Rename |
@@ -31,13 +30,22 @@ Leader key: `Space`
 
 | Key | Action |
 |-----|--------|
-| `C-w h` | Move to left window |
-| `C-w l` | Move to right window |
-| `C-w j` | Move to window below |
-| `C-w k` | Move to window above |
+| `C-w h/j/k/l` | Move to left/down/up/right window |
 | `C-w w` | Cycle windows |
 
-## LSP (requires gopls)
+## Editing
+
+| Key | Action |
+|-----|--------|
+| `V` | Select line (extend with `j`/`k`) |
+| `v` | Select characters |
+| `Vip` | Select paragraph |
+| `J` (visual) | Move selection down |
+| `K` (visual) | Move selection up |
+| `gcc` | Toggle comment on line |
+| `gc` (visual) | Toggle comment on selection |
+
+## LSP (gopls)
 
 | Key | Action |
 |-----|--------|
@@ -51,15 +59,13 @@ Leader key: `Space`
 | `Space rn` | Rename symbol |
 | `Space ds` | Document symbols |
 | `Space ws` | Workspace symbols |
-| `C-o` | Jump back |
-| `C-i` | Jump forward |
+| `C-o` / `C-i` | Jump back / forward |
 
 ## Diagnostics
 
 | Key | Action |
 |-----|--------|
-| `[d` | Previous diagnostic |
-| `]d` | Next diagnostic |
+| `[d` / `]d` | Previous / next diagnostic |
 | `Space e` | Show diagnostic float |
 | `Space q` | Send diagnostics to loclist |
 
@@ -68,11 +74,20 @@ Leader key: `Space`
 | Key | Action |
 |-----|--------|
 | `C-Space` | Trigger completion |
-| `Tab` | Next item |
-| `S-Tab` | Previous item |
+| `Tab` | Next item / expand snippet / jump forward |
+| `S-Tab` | Previous item / jump backward |
 | `Enter` | Confirm selection |
-| `C-d` | Scroll docs down |
-| `C-u` | Scroll docs up |
+| `C-d` / `C-u` | Scroll docs down / up |
+
+## Snippets (LuaSnip)
+
+Type trigger then `Tab` to expand, `Tab`/`S-Tab` to jump between placeholders.
+
+| Trigger | Expands to |
+|---------|------------|
+| `iferr` | `if err != nil { return err }` |
+| `tt` | Table-driven test scaffold |
+| `errw` | `fmt.Errorf("...: %w", err)` |
 
 ## Telescope
 
@@ -100,44 +115,25 @@ Leader key: `Space`
 | `Space dB` | Conditional breakpoint |
 | `Space dc` | Start / continue |
 | `Space dt` | Debug nearest test |
-| `F10` | Step over |
-| `F11` | Step into |
-| `F12` | Step out |
+| `Space dn` | Step over (next) |
+| `Space di` | Step into |
+| `Space du` | Step out (up) |
+| `Space dq` | Close DAP UI |
 
 ## Git
 
-### Gitsigns (in-buffer)
-
 | Key | Action |
 |-----|--------|
-| `]c` | Next hunk |
-| `[c` | Previous hunk |
+| `]c` / `[c` | Next / previous hunk |
 | `Space hs` | Stage hunk |
 | `Space hr` | Reset hunk |
 | `Space hp` | Preview hunk |
 | `Space hb` | Blame line |
-
-### Fugitive (commands)
-
-| Command | Action |
-|---------|--------|
 | `:Git blame` | Full file blame |
 | `:Git diff` | Git diff |
 | `:Git log` | Git log |
 | `:Git push` | Push |
 | `:Git pull` | Pull |
-
-## Editing
-
-| Key | Action |
-|-----|--------|
-| `V` | Select line (extend with `j`/`k`) |
-| `v` | Select characters |
-| `Vip` | Select paragraph |
-| `J` (visual) | Move selection down |
-| `K` (visual) | Move selection up |
-| `gcc` | Toggle comment on line |
-| `gc` (visual) | Toggle comment on selection |
 
 ## Clipboard
 
@@ -148,29 +144,21 @@ System clipboard is synced — `y`/`d`/`p` work with Cmd+C/Cmd+V.
 | `yy` | Copy line |
 | `yiw` | Copy word |
 | `v` then `y` | Select then copy |
-| `p` | Paste after |
-| `P` | Paste before |
+| `p` / `P` | Paste after / before |
 | `dd` | Cut line |
-
-## Snippets (LuaSnip)
-
-Type the trigger and press `Tab` to expand, then `Tab`/`S-Tab` to jump between placeholders.
-
-| Trigger | Expands to |
-|---------|------------|
-| `iferr` | `if err != nil { return err }` |
-| `tt` | Table-driven test scaffold |
-| `errw` | `fmt.Errorf("...: %w", err)` |
 
 ## On Save (automatic)
 
 - Organizes imports (goimports)
 - Formats code (gofumpt)
+- Go stdlib and module cache files are read-only
 
 ## Other
 
 | Key | Action |
 |-----|--------|
 | `Space cc` | Open Claude Code |
+| `Space ?` | Open this cheatsheet |
 | `Space` | Which-key popup (shows all keybindings) |
 | `C-\ C-n` | Exit terminal mode |
+| `:PluginUpdate` | Update all plugins |

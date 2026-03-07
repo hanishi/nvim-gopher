@@ -124,6 +124,19 @@ alpha.setup(dashboard.config)
 -- Tabline (show tab numbers + filenames at the top)
 vim.opt.showtabline = 2
 
+-- Mark Go stdlib and module cache files as read-only
+vim.api.nvim_create_autocmd("BufReadPost", {
+  callback = function(ev)
+    local path = vim.api.nvim_buf_get_name(ev.buf)
+    local goroot = os.getenv("GOROOT") or vim.fn.system("go env GOROOT"):gsub("%s+$", "")
+    local gomodcache = os.getenv("GOMODCACHE") or vim.fn.system("go env GOMODCACHE"):gsub("%s+$", "")
+    if path:find(goroot, 1, true) or path:find(gomodcache, 1, true) then
+      vim.bo[ev.buf].readonly = true
+      vim.bo[ev.buf].modifiable = false
+    end
+  end,
+})
+
 -- Auto-save on focus lost
 vim.api.nvim_create_autocmd("FocusLost", {
   callback = function()
@@ -370,9 +383,14 @@ vim.keymap.set("n", "<leader>db", require("dap").toggle_breakpoint)
 vim.keymap.set("n", "<leader>dB", function() require("dap").set_breakpoint(vim.fn.input("Condition: ")) end)
 vim.keymap.set("n", "<leader>dc", require("dap").continue)
 vim.keymap.set("n", "<leader>dt", require("dap-go").debug_test)
-vim.keymap.set("n", "<F10>",      require("dap").step_over)
-vim.keymap.set("n", "<F11>",      require("dap").step_into)
-vim.keymap.set("n", "<F12>",      require("dap").step_out)
+vim.keymap.set("n", "<leader>dn", require("dap").step_over)
+vim.keymap.set("n", "<leader>di", require("dap").step_into)
+vim.keymap.set("n", "<leader>du", require("dap").step_out)
+vim.keymap.set("n", "<leader>dq", function()
+  require("dapui").close()
+  require("nvim-tree.api").tree.toggle({ focus = false })
+  require("nvim-tree.api").tree.toggle({ focus = false })
+end)
 
 -- Gitsigns
 require("gitsigns").setup({

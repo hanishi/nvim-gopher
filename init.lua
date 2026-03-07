@@ -29,13 +29,6 @@ vim.api.nvim_create_autocmd("FileType", {
 local alpha = require("alpha")
 local dashboard = require("alpha.themes.dashboard")
 
--- Load custom splash from ~/.config/nvim/splash.lua if it exists
--- See splash.lua.example for the format
-local splash_ok, splash = pcall(dofile, vim.fn.stdpath("config") .. "/splash.lua")
-if not splash_ok or type(splash) ~= "table" then
-  splash = {}
-end
-
 -- Project stats
 local function project_stats()
   local stats = {}
@@ -108,10 +101,7 @@ local function project_stats()
 end
 
 -- Build header
-local header = {}
-for _, line in ipairs(splash.logo or { "   ʕ◔ϖ◔ʔ" }) do
-  table.insert(header, line)
-end
+local header = { "   ʕ◔ϖ◔ʔ" }
 table.insert(header, "")
 for _, line in ipairs(project_stats()) do
   table.insert(header, line)
@@ -417,6 +407,10 @@ require("which-key").setup({
     { "<leader>", mode = "n" },
   },
 })
+
+-- Move selected lines up/down in visual mode
+vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv")
+vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv")
 
 -- Tab keymaps
 vim.keymap.set("n", "<leader>1", "1gt")

@@ -127,6 +127,18 @@ Leader key: `Space`
 | `:Git push` | Push |
 | `:Git pull` | Pull |
 
+## Editing
+
+| Key | Action |
+|-----|--------|
+| `V` | Select line (extend with `j`/`k`) |
+| `v` | Select characters |
+| `Vip` | Select paragraph |
+| `J` (visual) | Move selection down |
+| `K` (visual) | Move selection up |
+| `gcc` | Toggle comment on line |
+| `gc` (visual) | Toggle comment on selection |
+
 ## Clipboard
 
 System clipboard is synced — `y`/`d`/`p` work with Cmd+C/Cmd+V.

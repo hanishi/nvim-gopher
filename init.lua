@@ -532,6 +532,20 @@ vim.api.nvim_create_user_command("GoTestAll", function()
   end
 end, { desc = "Generate tests for all functions in file" })
 
+-- Go Playground
+vim.api.nvim_create_user_command("GoPlay", function()
+  local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+  local code = table.concat(lines, "\n")
+  local result = vim.fn.system({ "curl", "-s", "--data-binary", code, "https://play.golang.org/share" })
+  if vim.v.shell_error == 0 and result ~= "" then
+    local url = "https://play.golang.org/p/" .. result
+    vim.fn.setreg("+", url)
+    vim.notify("Copied: " .. url)
+  else
+    vim.notify("Failed to share", vim.log.levels.ERROR)
+  end
+end, { desc = "Share current file to Go Playground" })
+
 -- Claude Code
 vim.keymap.set("n", "<leader>cc", function()
   vim.cmd("tabnew | terminal claude")

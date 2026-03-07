@@ -165,6 +165,12 @@ Place cursor on struct name and run:
 | `:GoRemoveTags` | Remove `json` tags |
 | `:GoRemoveTags yaml` | Remove `yaml` tags |
 
+## Go Playground
+
+| Command | Action |
+|---------|--------|
+| `:GoPlay` | Share current file to playground (URL copied to clipboard) |
+
 ## On Save (automatic)
 
 - Organizes imports (goimports)

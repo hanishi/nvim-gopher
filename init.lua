@@ -155,10 +155,19 @@ local function nvim_tree_on_attach(bufnr)
   end
   -- Load all default keymaps first
   nvim_tree_api.config.mappings.default_on_attach(bufnr)
+  -- Disable navigating above project root
+  vim.keymap.set("n", "-", "", opts("Disabled"))
+  vim.keymap.set("n", "<BS>", "", opts("Disabled"))
+  vim.keymap.set("n", "~", "", opts("Disabled"))
+
   -- Override Enter to always open files in a new tab
   vim.keymap.set("n", "<CR>", function()
     local node = nvim_tree_api.tree.get_node_under_cursor()
-    if not node or node.type == "directory" then
+    if not node then
+      return
+    elseif node.name == ".." then
+      return
+    elseif node.type == "directory" then
       nvim_tree_api.node.open.edit()
     else
       local path = node.absolute_path

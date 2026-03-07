@@ -159,6 +159,8 @@ System clipboard is synced — `y`/`d`/`p` work with Cmd+C/Cmd+V.
 | `:GoRemoveTags yaml` | Remove `yaml` tags |
 | `:GoTestFunc` | Generate test for function under cursor |
 | `:GoTestAll` | Generate tests for all functions in file |
+| `:GoCoverage` | Run tests and highlight covered (green) / uncovered (red) lines |
+| `:GoCoverageClear` | Clear coverage highlights |
 | `:GoPlay` | Share current file to Go Playground (URL copied) |
 
 ## Automatic

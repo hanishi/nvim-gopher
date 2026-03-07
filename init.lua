@@ -541,6 +541,44 @@ vim.api.nvim_create_user_command("GoTestAll", function()
   end
 end, { desc = "Generate tests for all functions in file" })
 
+-- Go coverage
+local coverage_ns = vim.api.nvim_create_namespace("go_coverage")
+vim.api.nvim_create_user_command("GoCoverage", function()
+  local file = vim.fn.expand("%:p")
+  local pkg_dir = vim.fn.fnamemodify(file, ":h")
+  local tmp = vim.fn.tempname()
+  local out = vim.fn.system({ "go", "test", "-coverprofile=" .. tmp, "./..." }, nil)
+  if vim.v.shell_error ~= 0 then
+    vim.notify("Tests failed:\n" .. out, vim.log.levels.ERROR)
+    return
+  end
+  -- Parse coverage profile
+  vim.api.nvim_buf_clear_namespace(0, coverage_ns, 0, -1)
+  local lines = vim.fn.readfile(tmp)
+  local buf_name = vim.api.nvim_buf_get_name(0)
+  for _, line in ipairs(lines) do
+    local f, l1, l2, count = line:match("^(.+):(%d+)%.%d+,(%d+)%.%d+%s+%d+%s+(%d+)$")
+    if f then
+      -- Match file: coverage uses module-relative paths
+      if buf_name:find(f:gsub("^.*/", ""), 1, true) then
+        l1 = tonumber(l1)
+        l2 = tonumber(l2)
+        count = tonumber(count)
+        local hl = count > 0 and "DiagnosticOk" or "DiagnosticError"
+        for l = l1, l2 do
+          pcall(vim.api.nvim_buf_add_highlight, 0, coverage_ns, hl, l - 1, 0, -1)
+        end
+      end
+    end
+  end
+  vim.fn.delete(tmp)
+  vim.notify("Coverage loaded")
+end, { desc = "Run tests and highlight coverage" })
+
+vim.api.nvim_create_user_command("GoCoverageClear", function()
+  vim.api.nvim_buf_clear_namespace(0, coverage_ns, 0, -1)
+end, { desc = "Clear coverage highlights" })
+
 -- Go Playground
 vim.api.nvim_create_user_command("GoPlay", function()
   local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)

@@ -483,6 +483,55 @@ vim.api.nvim_create_user_command("PluginUpdate", function()
   vim.notify("All plugins updated. Restart Neovim.")
 end, {})
 
+-- Go struct tags
+vim.api.nvim_create_user_command("GoAddTags", function(opts)
+  local tag = opts.args ~= "" and opts.args or "json"
+  local file = vim.fn.expand("%:p")
+  local struct = vim.fn.expand("<cword>")
+  local out = vim.fn.system({ "gomodifytags", "-file", file, "-struct", struct, "-add-tags", tag, "-w" })
+  if vim.v.shell_error == 0 then
+    vim.cmd("edit!")
+  else
+    vim.notify(out, vim.log.levels.ERROR)
+  end
+end, { nargs = "?", desc = "Add struct tags (default: json)" })
+
+vim.api.nvim_create_user_command("GoRemoveTags", function(opts)
+  local tag = opts.args ~= "" and opts.args or "json"
+  local file = vim.fn.expand("%:p")
+  local struct = vim.fn.expand("<cword>")
+  local out = vim.fn.system({ "gomodifytags", "-file", file, "-struct", struct, "-remove-tags", tag, "-w" })
+  if vim.v.shell_error == 0 then
+    vim.cmd("edit!")
+  else
+    vim.notify(out, vim.log.levels.ERROR)
+  end
+end, { nargs = "?", desc = "Remove struct tags (default: json)" })
+
+-- Go test generation
+vim.api.nvim_create_user_command("GoTestFunc", function()
+  local file = vim.fn.expand("%:p")
+  local func = vim.fn.expand("<cword>")
+  local out = vim.fn.system({ "gotests", "-only", func, "-w", file })
+  if vim.v.shell_error == 0 then
+    vim.cmd("edit!")
+    vim.notify("Test generated for " .. func)
+  else
+    vim.notify(out, vim.log.levels.ERROR)
+  end
+end, { desc = "Generate test for function under cursor" })
+
+vim.api.nvim_create_user_command("GoTestAll", function()
+  local file = vim.fn.expand("%:p")
+  local out = vim.fn.system({ "gotests", "-all", "-w", file })
+  if vim.v.shell_error == 0 then
+    vim.cmd("edit!")
+    vim.notify("Tests generated for all functions")
+  else
+    vim.notify(out, vim.log.levels.ERROR)
+  end
+end, { desc = "Generate tests for all functions in file" })
+
 -- Claude Code
 vim.keymap.set("n", "<leader>cc", function()
   vim.cmd("tabnew | terminal claude")

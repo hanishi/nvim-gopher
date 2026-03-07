@@ -147,6 +147,24 @@ System clipboard is synced — `y`/`d`/`p` work with Cmd+C/Cmd+V.
 | `p` / `P` | Paste after / before |
 | `dd` | Cut line |
 
+## Test Generation
+
+| Command | Action |
+|---------|--------|
+| `:GoTestFunc` | Generate test for function under cursor |
+| `:GoTestAll` | Generate tests for all functions in file |
+
+## Struct Tags
+
+Place cursor on struct name and run:
+
+| Command | Action |
+|---------|--------|
+| `:GoAddTags` | Add `json` tags to all fields |
+| `:GoAddTags yaml` | Add `yaml` tags |
+| `:GoRemoveTags` | Remove `json` tags |
+| `:GoRemoveTags yaml` | Remove `yaml` tags |
+
 ## On Save (automatic)
 
 - Organizes imports (goimports)

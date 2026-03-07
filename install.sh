@@ -15,6 +15,11 @@ fi
 echo "Installing core tools via Homebrew..."
 brew install neovim go gopls ripgrep delve 2>/dev/null || brew upgrade neovim go gopls ripgrep delve 2>/dev/null || true
 
+# --- Go tools ---
+echo "Installing Go tools..."
+go install github.com/fatih/gomodifytags@latest
+go install github.com/cweill/gotests/gotests@latest
+
 # --- Config files ---
 CONFIG_DIR="${HOME}/.config/nvim"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

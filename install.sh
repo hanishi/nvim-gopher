@@ -88,7 +88,7 @@ nvim --headless \
 
 echo ""
 echo "=== Setup complete ==="
-echo "Tools: neovim, go, gopls, ripgrep, delve"
+echo "Tools: neovim, go, gopls, ripgrep, delve, gomodifytags, gotests"
 echo "Plugins: $(ls "$PACK_DIR" | wc -l | tr -d ' ') installed"
 echo ""
 echo "Run 'nvim' to get started. Use :PluginUpdate to update plugins later."

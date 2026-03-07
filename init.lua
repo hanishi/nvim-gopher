@@ -557,4 +557,3 @@ vim.keymap.set("n", "<leader>?", function()
   vim.cmd("tabe " .. vim.fn.fnameescape(vim.fn.stdpath("config") .. "/cheatsheet.md"))
   vim.opt_local.bufhidden = "wipe"
 end)
-

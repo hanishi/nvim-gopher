@@ -109,6 +109,8 @@ Type trigger then `Tab` to expand, `Tab`/`S-Tab` to jump between placeholders.
 
 ## Debugger (DAP)
 
+All Go buffers are locked read-only during debug sessions.
+
 | Key | Action |
 |-----|--------|
 | `Space db` | Toggle breakpoint |
@@ -147,34 +149,23 @@ System clipboard is synced — `y`/`d`/`p` work with Cmd+C/Cmd+V.
 | `p` / `P` | Paste after / before |
 | `dd` | Cut line |
 
-## Test Generation
+## Go Commands
 
 | Command | Action |
 |---------|--------|
-| `:GoTestFunc` | Generate test for function under cursor |
-| `:GoTestAll` | Generate tests for all functions in file |
-
-## Struct Tags
-
-Place cursor on struct name and run:
-
-| Command | Action |
-|---------|--------|
-| `:GoAddTags` | Add `json` tags to all fields |
+| `:GoAddTags` | Add `json` tags to struct fields |
 | `:GoAddTags yaml` | Add `yaml` tags |
 | `:GoRemoveTags` | Remove `json` tags |
 | `:GoRemoveTags yaml` | Remove `yaml` tags |
+| `:GoTestFunc` | Generate test for function under cursor |
+| `:GoTestAll` | Generate tests for all functions in file |
+| `:GoPlay` | Share current file to Go Playground (URL copied) |
 
-## Go Playground
+## Automatic
 
-| Command | Action |
-|---------|--------|
-| `:GoPlay` | Share current file to playground (URL copied to clipboard) |
-
-## On Save (automatic)
-
-- Organizes imports (goimports)
-- Formats code (gofumpt)
+- Organizes imports on save (goimports)
+- Formats code on save (gofumpt)
+- Auto-saves all files on focus lost
 - Go stdlib and module cache files are read-only
 
 ## Other

@@ -125,11 +125,12 @@ alpha.setup(dashboard.config)
 vim.opt.showtabline = 2
 
 -- Mark Go stdlib and module cache files as read-only
+local goroot = os.getenv("GOROOT") or vim.fn.system("go env GOROOT"):gsub("%s+$", "")
+local gomodcache = os.getenv("GOMODCACHE") or vim.fn.system("go env GOMODCACHE"):gsub("%s+$", "")
 vim.api.nvim_create_autocmd("BufReadPost", {
+  pattern = "*.go",
   callback = function(ev)
     local path = vim.api.nvim_buf_get_name(ev.buf)
-    local goroot = os.getenv("GOROOT") or vim.fn.system("go env GOROOT"):gsub("%s+$", "")
-    local gomodcache = os.getenv("GOMODCACHE") or vim.fn.system("go env GOMODCACHE"):gsub("%s+$", "")
     if path:find(goroot, 1, true) or path:find(gomodcache, 1, true) then
       vim.bo[ev.buf].readonly = true
       vim.bo[ev.buf].modifiable = false
@@ -376,9 +377,43 @@ require("dap-go").setup()
 local dapui = require("dapui")
 dapui.setup()
 
-require("dap").listeners.after.event_initialized["dapui_config"] = function() dapui.open() end
-require("dap").listeners.before.event_terminated["dapui_config"]  = function() dapui.close() end
-require("dap").listeners.before.event_exited["dapui_config"]      = function() dapui.close() end
+-- Lock all Go buffers during debugging, unlock when done
+local pre_debug_modifiable = {}
+local function lock_buffers()
+  pre_debug_modifiable = {}
+  for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+    if vim.api.nvim_buf_is_loaded(buf) and vim.bo[buf].filetype == "go" then
+      pre_debug_modifiable[buf] = vim.bo[buf].modifiable
+      vim.bo[buf].modifiable = false
+      vim.bo[buf].readonly = true
+    end
+  end
+end
+local function unlock_buffers()
+  for buf, was_modifiable in pairs(pre_debug_modifiable) do
+    if vim.api.nvim_buf_is_valid(buf) then
+      vim.bo[buf].modifiable = was_modifiable
+      vim.bo[buf].readonly = not was_modifiable
+    end
+  end
+  pre_debug_modifiable = {}
+end
+
+require("dap").listeners.after.event_initialized["dapui_config"] = function()
+  lock_buffers()
+  dapui.open()
+end
+local function close_dapui_and_restore()
+  dapui.close()
+  unlock_buffers()
+  vim.defer_fn(function()
+    vim.cmd("NvimTreeClose")
+    vim.cmd("NvimTreeOpen")
+    vim.cmd("wincmd l")
+  end, 100)
+end
+require("dap").listeners.before.event_terminated["dapui_config"]  = close_dapui_and_restore
+require("dap").listeners.before.event_exited["dapui_config"]      = close_dapui_and_restore
 vim.keymap.set("n", "<leader>db", require("dap").toggle_breakpoint)
 vim.keymap.set("n", "<leader>dB", function() require("dap").set_breakpoint(vim.fn.input("Condition: ")) end)
 vim.keymap.set("n", "<leader>dc", require("dap").continue)
@@ -386,11 +421,7 @@ vim.keymap.set("n", "<leader>dt", require("dap-go").debug_test)
 vim.keymap.set("n", "<leader>dn", require("dap").step_over)
 vim.keymap.set("n", "<leader>di", require("dap").step_into)
 vim.keymap.set("n", "<leader>du", require("dap").step_out)
-vim.keymap.set("n", "<leader>dq", function()
-  require("dapui").close()
-  require("nvim-tree.api").tree.toggle({ focus = false })
-  require("nvim-tree.api").tree.toggle({ focus = false })
-end)
+vim.keymap.set("n", "<leader>dq", close_dapui_and_restore)
 
 -- Gitsigns
 require("gitsigns").setup({

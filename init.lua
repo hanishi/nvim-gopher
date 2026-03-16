@@ -13,6 +13,9 @@ vim.opt.undofile = true
 vim.opt.termguicolors = true
 vim.opt.updatetime = 250
 vim.opt.clipboard = "unnamedplus"
+vim.opt.foldmethod = "expr"
+vim.opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+vim.opt.foldlevel = 99
 vim.opt.completeopt = { "menu", "menuone", "noselect" }
 vim.opt.lazyredraw = true
 -- Go uses tabs
@@ -492,92 +495,76 @@ vim.api.nvim_create_user_command("PluginUpdate", function()
   vim.notify("All plugins updated. Restart Neovim.")
 end, {})
 
--- Go struct tags
-vim.api.nvim_create_user_command("GoAddTags", function(opts)
-  local tag = opts.args ~= "" and opts.args or "json"
-  local file = vim.fn.expand("%:p")
-  local struct = vim.fn.expand("<cword>")
-  local out = vim.fn.system({ "gomodifytags", "-file", file, "-struct", struct, "-add-tags", tag, "-w" })
-  if vim.v.shell_error == 0 then
-    vim.cmd("edit!")
-  else
-    vim.notify(out, vim.log.levels.ERROR)
-  end
-end, { nargs = "?", desc = "Add struct tags (default: json)" })
+-- go.nvim (provides GoAddTag, GoRmTag, GoTestFunc, GoTest, GoCoverage, GoImpl, GoFillStruct, etc.)
+require("go").setup({
+  lsp_cfg = false,
+  lsp_gofumpt = false,
+  lsp_keymaps = false,
+  lsp_codelens = false,
+  dap_debug = false,
+})
 
-vim.api.nvim_create_user_command("GoRemoveTags", function(opts)
-  local tag = opts.args ~= "" and opts.args or "json"
-  local file = vim.fn.expand("%:p")
-  local struct = vim.fn.expand("<cword>")
-  local out = vim.fn.system({ "gomodifytags", "-file", file, "-struct", struct, "-remove-tags", tag, "-w" })
-  if vim.v.shell_error == 0 then
-    vim.cmd("edit!")
-  else
-    vim.notify(out, vim.log.levels.ERROR)
-  end
-end, { nargs = "?", desc = "Remove struct tags (default: json)" })
+-- Treesitter textobjects
+local ts_select = require("nvim-treesitter-textobjects.select")
+local ts_move = require("nvim-treesitter-textobjects.move")
+local ts_swap = require("nvim-treesitter-textobjects.swap")
+require("nvim-treesitter-textobjects").setup({
+  select = { lookahead = true },
+  move = { set_jumps = true },
+})
+-- Select textobjects
+for _, mode in ipairs({ "x", "o" }) do
+  vim.keymap.set(mode, "af", function() ts_select.select_textobject("@function.outer") end)
+  vim.keymap.set(mode, "if", function() ts_select.select_textobject("@function.inner") end)
+  vim.keymap.set(mode, "ac", function() ts_select.select_textobject("@class.outer") end)
+  vim.keymap.set(mode, "ic", function() ts_select.select_textobject("@class.inner") end)
+  vim.keymap.set(mode, "aa", function() ts_select.select_textobject("@parameter.outer") end)
+  vim.keymap.set(mode, "ia", function() ts_select.select_textobject("@parameter.inner") end)
+end
+-- Move to textobjects
+for _, mode in ipairs({ "n", "x", "o" }) do
+  vim.keymap.set(mode, "]m", function() ts_move.goto_next_start("@function.outer") end)
+  vim.keymap.set(mode, "]M", function() ts_move.goto_next_end("@function.outer") end)
+  vim.keymap.set(mode, "[m", function() ts_move.goto_previous_start("@function.outer") end)
+  vim.keymap.set(mode, "[M", function() ts_move.goto_previous_end("@function.outer") end)
+  vim.keymap.set(mode, "]a", function() ts_move.goto_next_start("@parameter.outer") end)
+  vim.keymap.set(mode, "[a", function() ts_move.goto_previous_start("@parameter.outer") end)
+end
+-- Swap parameters
+vim.keymap.set("n", "<leader>a", function() ts_swap.swap_next("@parameter.inner") end)
+vim.keymap.set("n", "<leader>A", function() ts_swap.swap_previous("@parameter.inner") end)
 
--- Go test generation
-vim.api.nvim_create_user_command("GoTestFunc", function()
-  local file = vim.fn.expand("%:p")
-  local func = vim.fn.expand("<cword>")
-  local out = vim.fn.system({ "gotests", "-only", func, "-w", file })
-  if vim.v.shell_error == 0 then
-    vim.cmd("edit!")
-    vim.notify("Test generated for " .. func)
-  else
-    vim.notify(out, vim.log.levels.ERROR)
-  end
-end, { desc = "Generate test for function under cursor" })
+-- Trouble (better diagnostics list)
+require("trouble").setup({})
+vim.keymap.set("n", "<leader>xx", "<cmd>Trouble diagnostics toggle<CR>")
+vim.keymap.set("n", "<leader>xd", "<cmd>Trouble diagnostics toggle filter.buf=0<CR>")
+vim.keymap.set("n", "<leader>xl", "<cmd>Trouble loclist toggle<CR>")
+vim.keymap.set("n", "<leader>xq", "<cmd>Trouble qflist toggle<CR>")
 
-vim.api.nvim_create_user_command("GoTestAll", function()
-  local file = vim.fn.expand("%:p")
-  local out = vim.fn.system({ "gotests", "-all", "-w", file })
-  if vim.v.shell_error == 0 then
-    vim.cmd("edit!")
-    vim.notify("Tests generated for all functions")
-  else
-    vim.notify(out, vim.log.levels.ERROR)
-  end
-end, { desc = "Generate tests for all functions in file" })
+-- conform.nvim (formatter runner)
+require("conform").setup({
+  formatters_by_ft = {
+    go = { "gofumpt" },
+  },
+})
 
--- Go coverage
-local coverage_ns = vim.api.nvim_create_namespace("go_coverage")
-vim.api.nvim_create_user_command("GoCoverage", function()
-  local file = vim.fn.expand("%:p")
-  local pkg_dir = vim.fn.fnamemodify(file, ":h")
-  local tmp = vim.fn.tempname()
-  local out = vim.fn.system({ "go", "test", "-coverprofile=" .. tmp, "./..." }, nil)
-  if vim.v.shell_error ~= 0 then
-    vim.notify("Tests failed:\n" .. out, vim.log.levels.ERROR)
-    return
-  end
-  -- Parse coverage profile
-  vim.api.nvim_buf_clear_namespace(0, coverage_ns, 0, -1)
-  local lines = vim.fn.readfile(tmp)
-  local buf_name = vim.api.nvim_buf_get_name(0)
-  for _, line in ipairs(lines) do
-    local f, l1, l2, count = line:match("^(.+):(%d+)%.%d+,(%d+)%.%d+%s+%d+%s+(%d+)$")
-    if f then
-      -- Match file: coverage uses module-relative paths
-      if buf_name:find(f:gsub("^.*/", ""), 1, true) then
-        l1 = tonumber(l1)
-        l2 = tonumber(l2)
-        count = tonumber(count)
-        local hl = count > 0 and "DiagnosticOk" or "DiagnosticError"
-        for l = l1, l2 do
-          pcall(vim.api.nvim_buf_add_highlight, 0, coverage_ns, hl, l - 1, 0, -1)
-        end
-      end
-    end
-  end
-  vim.fn.delete(tmp)
-  vim.notify("Coverage loaded")
-end, { desc = "Run tests and highlight coverage" })
+-- nvim-surround
+require("nvim-surround").setup({})
 
-vim.api.nvim_create_user_command("GoCoverageClear", function()
-  vim.api.nvim_buf_clear_namespace(0, coverage_ns, 0, -1)
-end, { desc = "Clear coverage highlights" })
+-- todo-comments
+require("todo-comments").setup({})
+vim.keymap.set("n", "<leader>ft", "<cmd>TodoTelescope<CR>")
+vim.keymap.set("n", "]t", function() require("todo-comments").jump_next() end)
+vim.keymap.set("n", "[t", function() require("todo-comments").jump_prev() end)
+
+-- indent-blankline
+require("ibl").setup({
+  indent = { char = "│" },
+  scope = { enabled = true },
+})
+
+-- fidget.nvim (LSP progress indicator)
+require("fidget").setup({})
 
 -- Go Playground
 vim.api.nvim_create_user_command("GoPlay", function()

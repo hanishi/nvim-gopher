@@ -66,6 +66,14 @@ plugins=(
   "https://github.com/tpope/vim-fugitive.git"
   "https://github.com/nvim-lualine/lualine.nvim.git"
   "https://github.com/folke/which-key.nvim.git"
+  "https://github.com/ray-x/go.nvim"
+  "https://github.com/nvim-treesitter/nvim-treesitter-textobjects"
+  "https://github.com/folke/trouble.nvim"
+  "https://github.com/stevearc/conform.nvim"
+  "https://github.com/kylechui/nvim-surround"
+  "https://github.com/folke/todo-comments.nvim"
+  "https://github.com/lukas-reineke/indent-blankline.nvim"
+  "https://github.com/j-hui/fidget.nvim"
 )
 
 for url in "${plugins[@]}"; do

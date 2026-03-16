@@ -149,19 +149,59 @@ System clipboard is synced — `y`/`d`/`p` work with Cmd+C/Cmd+V.
 | `p` / `P` | Paste after / before |
 | `dd` | Cut line |
 
-## Go Commands
+## Go Commands (go.nvim)
 
 | Command | Action |
 |---------|--------|
-| `:GoAddTags` | Add `json` tags to struct fields |
-| `:GoAddTags yaml` | Add `yaml` tags |
-| `:GoRemoveTags` | Remove `json` tags |
-| `:GoRemoveTags yaml` | Remove `yaml` tags |
-| `:GoTestFunc` | Generate test for function under cursor |
-| `:GoTestAll` | Generate tests for all functions in file |
-| `:GoCoverage` | Run tests and highlight covered (green) / uncovered (red) lines |
-| `:GoCoverageClear` | Clear coverage highlights |
+| `:GoAddTag json` | Add `json` tags to struct fields |
+| `:GoRmTag json` | Remove `json` tags |
+| `:GoTestFunc` | Run test for function under cursor |
+| `:GoTest` | Run all tests |
+| `:GoImpl` | Generate interface implementation |
+| `:GoFillStruct` | Fill struct with default values |
+| `:GoFillSwitch` | Fill switch cases |
+| `:GoIfErr` | Generate `if err != nil` block |
+| `:GoCoverage` | Run tests with coverage highlight |
+| `:GoDoc` | Show Go doc for symbol |
 | `:GoPlay` | Share current file to Go Playground (URL copied) |
+
+## Treesitter Textobjects
+
+| Key | Action |
+|-----|--------|
+| `vaf` / `vif` | Select outer/inner function |
+| `vac` / `vic` | Select outer/inner class/struct |
+| `vaa` / `via` | Select outer/inner parameter |
+| `]m` / `[m` | Next / previous function start |
+| `]M` / `[M` | Next / previous function end |
+| `]a` / `[a` | Next / previous parameter |
+| `Space a` | Swap parameter with next |
+| `Space A` | Swap parameter with previous |
+
+## Trouble (diagnostics panel)
+
+| Key | Action |
+|-----|--------|
+| `Space xx` | Toggle workspace diagnostics |
+| `Space xd` | Toggle buffer diagnostics |
+| `Space xl` | Toggle loclist |
+| `Space xq` | Toggle quickfix |
+
+## Surround (nvim-surround)
+
+| Key | Action |
+|-----|--------|
+| `ysiw"` | Surround word with `"` |
+| `cs"'` | Change `"` to `'` |
+| `ds"` | Delete surrounding `"` |
+| `S"` (visual) | Surround selection with `"` |
+
+## TODO Comments
+
+| Key | Action |
+|-----|--------|
+| `Space ft` | Search TODOs via Telescope |
+| `]t` / `[t` | Next / previous TODO comment |
 
 ## Automatic
 

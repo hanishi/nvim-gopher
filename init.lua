@@ -580,11 +580,23 @@ vim.api.nvim_create_user_command("GoPlay", function()
   end
 end, { desc = "Share current file to Go Playground" })
 
--- Claude Code
-vim.keymap.set("n", "<leader>cc", function()
-  vim.cmd("tabnew | terminal claude")
-  vim.cmd("startinsert")
-end)
+-- Claude Code (floating terminal with auto file refresh)
+require("claude-code").setup({
+  window = {
+    position = "float",
+    float = {
+      width = "85%",
+      height = "85%",
+      border = "rounded",
+    },
+  },
+  keymaps = {
+    toggle = {
+      normal = "<leader>cc",
+      terminal = "<leader>cc",
+    },
+  },
+})
 
 -- Cheatsheet
 vim.keymap.set("n", "<leader>?", function()

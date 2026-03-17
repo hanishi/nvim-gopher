@@ -214,7 +214,9 @@ System clipboard is synced — `y`/`d`/`p` work with Cmd+C/Cmd+V.
 
 | Key | Action |
 |-----|--------|
-| `Space cc` | Open Claude Code |
+| `Space cc` | Toggle Claude Code (floating terminal) |
+| `:ClaudeCodeContinue` | Resume most recent conversation |
+| `:ClaudeCodeResume` | Interactive conversation picker |
 | `Space ?` | Open this cheatsheet |
 | `Space` | Which-key popup (shows all keybindings) |
 | `C-\ C-n` | Exit terminal mode |

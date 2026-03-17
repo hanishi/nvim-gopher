@@ -74,6 +74,7 @@ plugins=(
   "https://github.com/folke/todo-comments.nvim"
   "https://github.com/lukas-reineke/indent-blankline.nvim"
   "https://github.com/j-hui/fidget.nvim"
+  "https://github.com/greggh/claude-code.nvim"
 )
 
 for url in "${plugins[@]}"; do
